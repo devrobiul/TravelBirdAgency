@@ -48,6 +48,10 @@ Route::controller(CustomerController::class)->prefix('people')->name('customer.'
     Route::delete('customer/transaction/delete/{id}', 'transactionDelete')->name('transactionDelete');
     Route::get('customer/sale/report/{id}', 'customerSaleReport')->name('saleReport');
     Route::get('customer/due/list', 'dueCustomerList')->name('dueCustomerList');
+    Route::get('customer/sale/purchase/data/{id}', 'salePurchaseData')->name('salePurchaseData');
+    Route::post('customer/bulk-status-update','bulkStatusUpdate')->name('bulk-status-update');
+    Route::get('customer/bulk/pdf', 'bulkPdf')->name('bulk.pdf');
+
 });
 
 // Refund ticket

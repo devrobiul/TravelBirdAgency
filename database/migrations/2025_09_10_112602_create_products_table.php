@@ -56,8 +56,7 @@ return new class extends Migration
             $table->string('sale_date')->nullable();
             $table->json('pax_data')->nullable();
             $table->json('meta_data')->nullable();
-            $table->enum('status', ['1', '0'])->default('1');
-    
+            $table->enum('status', ['unsent', 'bill_sent','paid'])->default('unsent');
             $table->timestamps();
         });
     }

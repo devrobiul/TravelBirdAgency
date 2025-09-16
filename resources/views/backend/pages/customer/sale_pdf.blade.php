@@ -244,7 +244,6 @@
                                 <strong>Group Ticket</strong>:<span
                                     style="color:blue">{{ $item['product']->ticket_pnr }}</span>(G-Ticket)<br>
                                 <strong>Issue:</strong>{{ $item['product']->issue_date ?? 'N/A' }}<br>
-
                                 <strong>P/N:</strong>{{ $item['pax_name'] ?? 'N/A' }}<br>
                                 <strong>P/M:</strong>{{ $item['pax_mobile_no'] ?? 'N/A' }}<br>
                                 <strong>P/T:</strong>{{ $item['pax_type'] ?? 'N/A' }}

@@ -274,7 +274,7 @@ class SingleTicketController extends Controller
         $product = Product::findOrFail($id);
         $paxData = [];
 
-        foreach ($request->g_pax_name as $index => $name) {
+        foreach ($request->meta_data as $index => $name) {
             $paxData[] = [
                 'name'       => $name,
                 'type'       => $request->g_pax_type[$index] ?? null,

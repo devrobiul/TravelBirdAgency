@@ -8,6 +8,7 @@ use App\Models\Account;
 use App\Models\AgencyAccount;
 use App\Models\Customer;
 use App\Models\Depositamount;
+use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\Sale;
 use App\Models\Transaction;
@@ -93,7 +94,7 @@ class CustomerController extends Controller
         $customer->type = 'customer';
         $customer->name = $request->name;
         $customer->slug = Str::slug($request->phone);
-        $customer->uuid = rand(1111,9999);
+        $customer->uuid = rand(1111, 9999);
         $customer->phone = $request->phone;
         $customer->address = $request->address;
         $customer->password = '12345678';
@@ -103,18 +104,18 @@ class CustomerController extends Controller
             'message' => 'Customer created successfully!'
         ]);
     }
-        public function edit($id)
+    public function edit($id)
     {
         return view('backend.pages.customer.modal_create', [
             'customer' => User::findOrFail($id),
         ]);
     }
-        public function update(Request $request, $id)
+    public function update(Request $request, $id)
     {
         $request->validate([
-            'name'=>'required',
-            'phone'=>'required|unique:users,phone,'.$id,
-            'address'=>'required',
+            'name' => 'required',
+            'phone' => 'required|unique:users,phone,' . $id,
+            'address' => 'required',
         ]);
 
         $customer = User::findOrFail($id);
@@ -127,7 +128,7 @@ class CustomerController extends Controller
 
         return response()->json([
             'success' => true,
-            'route' => route('admin.customer.details',$customer->slug),
+            'route' => route('admin.customer.details', $customer->slug),
             'message' => 'Customer updated successfully!'
         ]);
     }
@@ -267,162 +268,160 @@ class CustomerController extends Controller
                 $account->current_balance += $request->amount;
                 $account->save();
             }
-
-        
         }
         session()->flash('success', 'Transaction created successfully!');
         return back();
     }
-public function customerSalereport(Request $request, $id)
-{
-    
-    
-    
-    $request->validate([
-        'start_date' => 'required|date',
-        'end_date' => 'required|date|after_or_equal:start_date',
-    ]);
+    public function customerSalereport(Request $request, $id)
+    {
 
 
-    $start_date = $request->start_date;
-    $end_date = $request->end_date;
 
-    // Find the customer
-    $customer = User::find($id);
-    if (!$customer) {
-        return back()->with('error', 'Customer not found.');
+        $request->validate([
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+        ]);
+
+
+        $start_date = $request->start_date;
+        $end_date = $request->end_date;
+
+        // Find the customer
+        $customer = User::find($id);
+        if (!$customer) {
+            return back()->with('error', 'Customer not found.');
+        }
+
+        // Fetch the data with eager loading to prevent N+1 query issues
+        $sales = Sale::with(['product', 'product.airline'])
+            ->where('sale_customer_id', $customer->id)
+            ->whereBetween('sale_date', [$start_date, $end_date])
+            ->get();
+
+        $purchase = Purchase::with(['product', 'product.airline'])
+            ->where('purchase_vendor_id', $customer->id)
+            ->whereBetween('purchase_date', [$start_date, $end_date])
+            ->get();
+
+        $customer_payment = Transaction::with(['customer', 'fromAccount'])
+            ->where('customer_id', $customer->id)
+            ->where('payment_type', 'client_payment')
+            ->whereBetween('transaction_date', [$start_date, $end_date])
+            ->get();
+
+        $office_payment = Transaction::with(['customer', 'fromAccount'])
+            ->where('customer_id', $customer->id)
+            ->where('payment_type', 'office_payment')
+            ->whereBetween('transaction_date', [$start_date, $end_date])
+            ->get();
+
+        // Ensure we use collections and prevent null errors
+        $combined = collect([]) // Start with an empty collection
+            ->merge($sales->map(function ($sale) {
+                return [
+                    'type' => 'sale',
+                    'date' => $sale->sale_date,
+                    'invoice' => $sale->product?->invoice_no ?? 'N/A',
+                    'price' => $sale->sale_price,
+                    'product' => $sale->product,
+                    'pax_name' => $sale->pax_name,
+                    'pax_mobile_no' => $sale->pax_mobile_no,
+                    'pax_type' => $sale->pax_type,
+                    'purchase_date' => null,
+                    'purchase_price' => null,
+                ];
+            }))
+            ->merge($purchase->map(function ($purchase) {
+                return [
+                    'type' => 'purchase',
+                    'date' => $purchase->purchase_date,
+                    'invoice' => $purchase->product?->invoice_no ?? 'N/A',
+                    'price' => null,
+                    'product' => $purchase->product,
+                    'purchase_date' => $purchase->purchase_date,
+                    'purchase_price' => $purchase->purchase_price,
+                    'user_balance' => $purchase->customer?->balance ?? null,
+                    'pax_name' => null,
+                    'pax_mobile_no' => null,
+                    'pax_type' => null,
+                ];
+            }))
+            ->merge($customer_payment->map(function ($customer_payment) {
+                return [
+                    'type' => 'client_payment',
+                    'date' => $customer_payment->transaction_date,
+                    'invoice' => null,
+                    'price' => $customer_payment->amount,
+                    'purchase_price' => null,
+                    'product' => null,
+                    'transaction_id' => $customer_payment->transaction_id,
+                    'account_name' => $customer_payment->fromAccount?->account_name ?? 'N/A',
+                    'account_number' => $customer_payment->fromAccount?->transaction_number ?? 'N/A',
+                    'pax_name' => null,
+                    'pax_mobile_no' => null,
+                    'pax_type' => null,
+                ];
+            }))
+            ->merge($office_payment->map(function ($office_payment) {
+                return [
+                    'type' => 'office_payment',
+                    'date' => $office_payment->transaction_date,
+                    'invoice' => null,
+                    'price' => $office_payment->amount,
+                    'purchase_price' => null,
+                    'product' => null,
+                    'pax_name' => null,
+                    'pax_mobile_no' => null,
+                    'pax_type' => null,
+                    'transaction_id' => $office_payment->transaction_id,
+                    'account_name' => $office_payment->fromAccount?->account_name ?? 'N/A',
+                    'account_number' => $office_payment->fromAccount?->transaction_number ?? 'N/A',
+                ];
+            }));
+
+        // Sort the combined data by date
+        $combined = $combined->sortBy('date')->values(); // Reindex to prevent gaps
+
+        // Calculate previous balance
+        $previous_balance = $this->calculatePreviousBalance($id, $start_date);
+        // Pass the data to the view
+        return view('backend.pages.customer.sale', [
+            'sales' => $sales,
+            'start_date' => $start_date,
+            'end_date' => $end_date,
+            'customer' => $customer,
+            'customer_payment' => $customer_payment,
+            'office_payment' => $office_payment,
+            'purchase' => $purchase,
+            'combined' => $combined,
+            'previous_balance' => $previous_balance,
+        ]);
     }
-  
-    // Fetch the data with eager loading to prevent N+1 query issues
-    $sales = Sale::with(['product', 'product.airline'])
-        ->where('sale_customer_id', $customer->id)
-        ->whereBetween('sale_date', [$start_date, $end_date])
-        ->get();
-
-    $purchase = Purchase::with(['product', 'product.airline'])
-        ->where('purchase_vendor_id', $customer->id)
-        ->whereBetween('purchase_date', [$start_date, $end_date])
-        ->get();
-
-    $customer_payment = Transaction::with(['customer', 'fromAccount'])
-        ->where('customer_id', $customer->id)
-        ->where('payment_type', 'client_payment')
-        ->whereBetween('transaction_date', [$start_date, $end_date])
-        ->get();
-
-    $office_payment = Transaction::with(['customer', 'fromAccount'])
-        ->where('customer_id', $customer->id)
-        ->where('payment_type', 'office_payment')
-        ->whereBetween('transaction_date', [$start_date, $end_date])
-        ->get();
-
-    // Ensure we use collections and prevent null errors
-    $combined = collect([]) // Start with an empty collection
-        ->merge($sales->map(function ($sale) {
-            return [
-                'type' => 'sale',
-                'date' => $sale->sale_date,
-                'invoice' => $sale->product?->invoice_no ?? 'N/A',
-                'price' => $sale->sale_price,
-                'product' => $sale->product,
-                'pax_name' => $sale->pax_name,
-                'pax_mobile_no' => $sale->pax_mobile_no,
-                'pax_type' => $sale->pax_type,
-                'purchase_date' => null,
-                'purchase_price' => null,
-            ];
-        }))
-        ->merge($purchase->map(function ($purchase) {
-            return [
-                'type' => 'purchase',
-                'date' => $purchase->purchase_date,
-                'invoice' => $purchase->product?->invoice_no ?? 'N/A',
-                'price' => null,
-                'product' => $purchase->product,
-                'purchase_date' => $purchase->purchase_date,
-                'purchase_price' => $purchase->purchase_price,
-                'user_balance' => $purchase->customer?->balance ?? null,
-                'pax_name' => null,
-                'pax_mobile_no' => null,
-                'pax_type' => null,
-            ];
-        }))
-        ->merge($customer_payment->map(function ($customer_payment) {
-            return [
-                'type' => 'client_payment',
-                'date' => $customer_payment->transaction_date,
-                'invoice' => null,
-                'price' => $customer_payment->amount,
-                'purchase_price' => null,
-                'product' => null,
-                'transaction_id' => $customer_payment->transaction_id,
-                'account_name' => $customer_payment->fromAccount?->account_name ?? 'N/A',
-                'account_number' => $customer_payment->fromAccount?->transaction_number ?? 'N/A',
-                'pax_name' => null,
-                'pax_mobile_no' => null,
-                'pax_type' => null,
-            ];
-        }))
-        ->merge($office_payment->map(function ($office_payment) {
-            return [
-                'type' => 'office_payment',
-                'date' => $office_payment->transaction_date,
-                'invoice' => null,
-                'price' => $office_payment->amount,
-                'purchase_price' => null,
-                'product' => null,
-                'pax_name' => null,
-                'pax_mobile_no' => null,
-                'pax_type' => null,
-                'transaction_id' => $office_payment->transaction_id,
-                'account_name' => $office_payment->fromAccount?->account_name ?? 'N/A',
-                'account_number' => $office_payment->fromAccount?->transaction_number ?? 'N/A',
-            ];
-        }));
-
-    // Sort the combined data by date
-    $combined = $combined->sortBy('date')->values(); // Reindex to prevent gaps
-
-    // Calculate previous balance
-    $previous_balance = $this->calculatePreviousBalance($id, $start_date);
-    // Pass the data to the view
-    return view('backend.pages.customer.sale', [
-        'sales' => $sales,
-        'start_date' => $start_date,
-        'end_date' => $end_date,
-        'customer' => $customer,
-        'customer_payment' => $customer_payment,
-        'office_payment' => $office_payment,
-        'purchase' => $purchase,
-        'combined' => $combined,
-        'previous_balance' => $previous_balance,
-    ]);
-}
 
 
 
-protected function calculatePreviousBalance($id, $start_date)
-{
-    $credit = Sale::where('sale_customer_id', $id)
-        ->where('sale_date', '<', $start_date)
-        ->sum('sale_price');
+    protected function calculatePreviousBalance($id, $start_date)
+    {
+        $credit = Sale::where('sale_customer_id', $id)
+            ->where('sale_date', '<', $start_date)
+            ->sum('sale_price');
 
-    $purchase_debit = Purchase::where('purchase_vendor_id', $id)
-        ->where('purchase_date', '<', $start_date)
-        ->sum('purchase_price');
+        $purchase_debit = Purchase::where('purchase_vendor_id', $id)
+            ->where('purchase_date', '<', $start_date)
+            ->sum('purchase_price');
 
-    $customer_debit = Transaction::where('customer_id', $id)
-        ->where('transaction_date', '<', $start_date)
-        ->where('payment_type', 'client_payment')
-        ->sum('amount');
+        $customer_debit = Transaction::where('customer_id', $id)
+            ->where('transaction_date', '<', $start_date)
+            ->where('payment_type', 'client_payment')
+            ->sum('amount');
 
-    $office_debit = Transaction::where('customer_id', $id)
-        ->where('payment_type', 'office_payment')
-        ->where('transaction_date', '<', $start_date)
-        ->sum('amount');
+        $office_debit = Transaction::where('customer_id', $id)
+            ->where('payment_type', 'office_payment')
+            ->where('transaction_date', '<', $start_date)
+            ->sum('amount');
 
-    return $credit - ($purchase_debit + $customer_debit - $office_debit);
-}
+        return $credit - ($purchase_debit + $customer_debit - $office_debit);
+    }
 
     public function transactionDelete(Request $request, $id)
     {
@@ -456,7 +455,7 @@ protected function calculatePreviousBalance($id, $start_date)
     }
     public function dueCustomerList()
     {
- // base query
+
         $customers = User::type('customer')->get();
 
         $due_customers = $customers->map(function ($customer) {
@@ -477,14 +476,77 @@ protected function calculatePreviousBalance($id, $start_date)
             }
         })->filter();
 
-       
 
-         $pdf = Pdf::loadView('backend.pages.customer.due-pdf', compact( 'due_customers'))
+
+        $pdf = Pdf::loadView('backend.pages.customer.due-pdf', compact('due_customers'))
             ->setPaper('a4', 'portrait');
         return $pdf->download('Due-customer-list.pdf');
-        
     }
 
+    public function salePurchaseData($id)
+    {
+
+        $customer = User::findOrFail($id);
+
+        $sales = collect(Sale::with(['product', 'product.airline'])
+            ->where('sale_customer_id', $customer->id)
+            ->latest()->get());
+        return view('backend.pages.customer.bulk_billing', [
+            'customer' => $customer,
+            'sales' => $sales,
+        ]);
+    }
+
+
+
+public function bulkStatusUpdate(Request $request)
+{
+    $request->validate([
+        'product_ids' => 'required|string',
+        'status' => 'required|in:unsent,bill_sent,paid',
+        'customer_id' => 'required|integer|exists:users,id',
+    ]);
+
+    $productIds = explode(',', $request->product_ids);
+    Product::whereIn('id', $productIds)->update(['status' => $request->status]);
+
+    $pdfUrl = null;
+
+    if ($request->status === 'bill_sent') {
+        // Proper route generation
+        $pdfUrl = route('admin.customer.bulk.pdf', [
+            'ids' => implode(',', $productIds),
+            'customer_id' => $request->customer_id
+        ]);
+    }
+
+    return redirect()->back()
+        ->with('success', 'Selected products status updated successfully!')
+        ->with('pdf_url', $pdfUrl);
+}
+
+
+public function bulkPdf(Request $request)
+{
+    $productIds = explode(',', $request->ids ?? '');
+    $customerId = $request->customer_id ?? null;
+
+    if (!$productIds || !$customerId) {
+        abort(404, 'Invalid PDF request.');
+    }
+
+    $products = Product::with('sales.customer')->whereIn('id', $productIds)->get();
+    $customer = User::findOrFail($customerId);
+
+    if ($products->isEmpty()) {
+        abort(404, 'No products found for PDF.');
+    }
+
+    $pdf = Pdf::loadView('backend.pages.customer.bulk_billing_pdf', compact('products','customer'))
+        ->setPaper('a4', 'portrait');
+
+    return $pdf->download($customer->name.'-bulk_invoices.pdf');
+}
 
 
 }

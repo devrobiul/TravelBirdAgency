@@ -340,26 +340,5 @@
            </div>
        </div>
    </div>
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    const noteToggle = document.getElementById('noteToggle');
-    const noteDropdown = document.getElementById('noteDropdown');
 
-    // Toggle dropdown on icon click
-    noteToggle.addEventListener('click', function(e) {
-        e.preventDefault();
-        if (noteDropdown.style.display === 'none' || noteDropdown.style.display === '') {
-            noteDropdown.style.display = 'block';
-        } else {
-            noteDropdown.style.display = 'none';
-        }
-    });
 
-    // Close dropdown if clicked outside
-    document.addEventListener('click', function(e) {
-        if (!noteDropdown.contains(e.target) && !noteToggle.contains(e.target)) {
-            noteDropdown.style.display = 'none';
-        }
-    });
-});
-</script>

@@ -79,6 +79,11 @@
                 data-url="{{ route('admin.customer.edit', $customer->id) }}">
                 <i class="bi bi-pencil"></i> Edit Customer
             </button>
+            <a class="btn btn-secondary btn-sm mb-2"
+                href="{{ route('admin.customer.salePurchaseData', $customer->id) }}">
+                <i class="bi bi-mouse"></i>Sale Custom Bill <i class="bi bi-arrow-right"></i>
+
+            </a>
             <div class="input-group input-group-sm" style="max-width:400px;">
                 <input type="text" id="referralLink"
                     value="{{ route('customerCheckReport', [$customer->slug, $customer->uuid]) }}" readonly
@@ -419,7 +424,7 @@
                                             <td>{{ $loop->iteration }}</td>
                                             <td>Sale date: {{ $item->sale_date }} <br>
                                                 Saler: {{ $item->product->user->name ?? 'NA' }} <br>
-                                                Invoice: {{ $item->product->invoice_no }}
+                                                Invoice: {{ $item->product->invoice_no??'N/A' }}
                                             </td>
                                             <td>
                                                 @if ($item->product && $item->product->product_type == 'single_ticket')

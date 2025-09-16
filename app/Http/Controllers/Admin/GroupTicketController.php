@@ -246,6 +246,11 @@ class GroupTicketController extends Controller
     {
 
         if ($request->product_type == 'group_ticket') {
+            if($request->purchase_vendor_id==0){
+                       $request->validate([
+                'purchase_account_id'=>'required',
+            ]);
+        }
             if ($request->purchase_account_id) {
                 $account = AgencyAccount::find($request->purchase_account_id);
                 if ($account) {
@@ -263,6 +268,7 @@ class GroupTicketController extends Controller
                 'product_type' => $request->product_type,
                 'ticket_type' => 'Group-Ticket',
                 'ticket_pnr' => $request->ticket_pnr,
+                'group_single_price' => $request->group_single_price,
                 'group_qty' => $request->group_qty,
                 'group_ticket_qty' => $request->group_ticket_qty,
                 'airline_id' => $request->airline_id,
@@ -377,11 +383,16 @@ class GroupTicketController extends Controller
 public function update(Request $request, $id)
 {
     $request->validate([
+        'group_single_price' => 'required',
         'airline_id' => 'required',
         'depart_date' => 'required',
         'ticket_pnr' => 'required|unique:products,ticket_pnr,' . $id,
     ]);
-
+          if($request->purchase_vendor_id==0){
+    $request->validate([
+                'purchase_account_id'=>'required',
+            ]);
+        }
     $product = Product::findOrFail($id);
 
     if ($request->purchase_price) {
@@ -420,6 +431,7 @@ public function update(Request $request, $id)
         'ticket_pnr' => $request->ticket_pnr,
         'group_qty' => $request->group_qty,
         'group_ticket_qty' => $request->group_ticket_qty,
+        'group_single_price' => $request->group_single_price,
         'airline_id' => $request->airline_id,
         'issue_date' => $request->issue_date,
         'sale_date' => $request->sale_date,

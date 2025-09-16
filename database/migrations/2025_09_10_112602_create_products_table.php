@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('product_type')->nullable();
             $table->string('ticket_type')->nullable();
             $table->integer('group_qty')->nullable();
+            $table->float('group_single_price')->default(0);
             $table->string('ticket_pnr')->nullable()->index();
             $table->float('product_sale_profit')->nullable();
             $table->float('product_sale_loss')->nullable();
@@ -56,7 +57,8 @@ return new class extends Migration
             $table->string('sale_date')->nullable();
             $table->json('pax_data')->nullable();
             $table->json('meta_data')->nullable();
-            $table->enum('status', ['unsent', 'bill_sent','paid'])->default('unsent');
+            $table->enum('status', ['1', '0'])->default('1');
+    
             $table->timestamps();
         });
     }

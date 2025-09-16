@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Sep 16, 2025 at 10:38 AM
+-- Generation Time: Sep 16, 2025 at 07:40 PM
 -- Server version: 10.11.10-MariaDB
 -- PHP Version: 7.2.34
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `u841757311_b2bTravel`
+-- Database: `u841757311_b2ctravel`
 --
 
 -- --------------------------------------------------------
@@ -40,6 +40,13 @@ CREATE TABLE `agency_accounts` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `agency_accounts`
+--
+
+INSERT INTO `agency_accounts` (`id`, `account_type`, `account_name`, `account_number`, `branch_name`, `opening_balance`, `current_balance`, `last_transaction_date`, `status`, `created_at`, `updated_at`) VALUES
+(12, 'Bank', 'IBBL', '2161245', 'Chowdhuryhat', 50000, 161800, NULL, 1, '2025-09-15 15:15:11', '2025-09-16 15:18:38');
 
 -- --------------------------------------------------------
 
@@ -10274,6 +10281,27 @@ CREATE TABLE `expenses` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `expenses`
+--
+
+INSERT INTO `expenses` (`id`, `category_id`, `account_id`, `expense_amount`, `expense_date`, `note`, `created_at`, `updated_at`) VALUES
+(10, 4, 12, 500, '2025-09-16', 'Bisadfasd', '2025-09-15 18:19:11', '2025-09-15 18:19:11'),
+(11, 5, 12, 600, '2025-09-16', NULL, '2025-09-15 18:20:03', '2025-09-15 18:20:03'),
+(12, 6, 12, 500, '2025-09-16', '454', '2025-09-15 18:20:10', '2025-09-15 18:20:10'),
+(13, 7, 12, 7400, '2025-09-16', NULL, '2025-09-15 18:20:33', '2025-09-15 18:20:33'),
+(14, 8, 12, 300, '2025-09-16', NULL, '2025-09-15 18:20:47', '2025-09-15 18:20:47'),
+(15, 9, 12, 600, '2025-09-16', NULL, '2025-09-15 18:20:55', '2025-09-15 18:20:55'),
+(16, 10, 12, 40, '2025-09-16', NULL, '2025-09-15 18:21:03', '2025-09-15 18:21:03'),
+(17, 11, 12, 500, '2025-09-16', NULL, '2025-09-15 18:21:17', '2025-09-15 18:21:17'),
+(18, 12, 12, 20, '2025-09-16', NULL, '2025-09-15 18:21:24', '2025-09-15 18:21:24'),
+(19, 14, 12, 5000, '2025-09-16', NULL, '2025-09-15 18:21:33', '2025-09-15 18:21:33'),
+(20, 15, 12, 540, '2025-09-16', NULL, '2025-09-15 18:21:42', '2025-09-15 18:21:42'),
+(21, 16, 12, 1000, '2025-09-16', NULL, '2025-09-15 18:21:48', '2025-09-15 18:21:48'),
+(22, 17, 12, 200, '2025-09-16', NULL, '2025-09-15 18:21:55', '2025-09-15 18:21:55'),
+(23, 18, 12, 3000, '2025-09-16', NULL, '2025-09-15 18:22:01', '2025-09-15 18:22:01'),
+(24, 19, 12, 2000, '2025-09-16', NULL, '2025-09-15 18:22:08', '2025-09-15 18:22:08');
+
 -- --------------------------------------------------------
 
 --
@@ -10492,6 +10520,7 @@ CREATE TABLE `products` (
   `product_type` varchar(255) DEFAULT NULL,
   `ticket_type` varchar(255) DEFAULT NULL,
   `group_qty` int(11) DEFAULT NULL,
+  `group_single_price` float NOT NULL DEFAULT 0,
   `group_ticket_qty` int(11) NOT NULL DEFAULT 0,
   `ticket_pnr` varchar(255) DEFAULT NULL,
   `product_sale_profit` double DEFAULT NULL,
@@ -10527,10 +10556,23 @@ CREATE TABLE `products` (
   `sale_date` varchar(255) DEFAULT NULL,
   `pax_data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`pax_data`)),
   `meta_data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`meta_data`)),
-  `status` enum('1','0') NOT NULL DEFAULT '1',
+  `status` enum('unsent','bill_sent','paid') NOT NULL DEFAULT 'unsent',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `products`
+--
+
+INSERT INTO `products` (`id`, `user_id`, `airline_id`, `visa_id`, `invoice_no`, `product_type`, `ticket_type`, `group_qty`, `group_single_price`, `group_ticket_qty`, `ticket_pnr`, `product_sale_profit`, `product_sale_loss`, `travel_status`, `departer_time`, `arrival_time`, `depart_date`, `return_date`, `journey_from`, `journey_to`, `multicity_from`, `multicity_to`, `issue_date`, `re_issue_date`, `refund_date`, `passport_type`, `service_type`, `dath_of_birth`, `tracking_id`, `application_date`, `delivery_date`, `visa_type`, `visit_country`, `visa_issue_date`, `visa_exp_date`, `hotel_name`, `hotel_location`, `hotel_purchase_email`, `hotel_number_of_day`, `hotel_refer`, `passport_price`, `sale_date`, `pax_data`, `meta_data`, `status`, `created_at`, `updated_at`) VALUES
+(42, 1, NULL, NULL, '608259', 'custom_bill', NULL, NULL, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-15', NULL, NULL, NULL, 'b2c', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, '2025-09-15', '[]', '[{\"service_name\":\"Fatehabad,Hathazari,Chattogram.\",\"service_cost\":\"6000\"},{\"service_name\":\"Fatehabad,Hathazari\",\"service_cost\":\"5000\"},{\"service_name\":\"RDS Tower,Shop No 20\",\"service_cost\":\"4000\"},{\"service_name\":\"01882850027,01745034139\",\"service_cost\":\"3000\"}]', 'bill_sent', '2025-09-15 15:16:22', '2025-09-16 14:43:23'),
+(43, 1, 2, NULL, '156550', 'single_ticket', 'issue_ticket', NULL, 0, 0, '5000', NULL, NULL, 'oneway', NULL, NULL, '2025-09-26', NULL, 'AMS', 'ALG', NULL, NULL, '2025-09-16', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, '2025-09-16', '[{\"name\":\"Gotrip Travel\",\"type\":\"Adult\",\"mobile_no\":\"01610361144\",\"price\":\"7000\"}]', '[]', 'bill_sent', '2025-09-15 15:31:48', '2025-09-16 15:55:17'),
+(45, 1, NULL, NULL, '489458', 'hotel_booking', NULL, NULL, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-15', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Albania', NULL, NULL, 'Cox TOday', 'Cox\'s Bazar', 'raidaitbd@gmail.com', '2', 'http://127.0.0.1:8000/admin/hotel/booking/create', 0, '2025-09-15', '[{\"name\":\"Incefta Company\",\"type\":\"Infant\",\"mobile_no\":\"04152452452\",\"price\":null}]', '[]', 'bill_sent', '2025-09-15 15:58:11', '2025-09-16 14:43:23'),
+(48, 1, NULL, NULL, '182705', 'ticket_refund', 'Refund Ticket', NULL, 0, 0, 'Refund-5000', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-15', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, '2025-09-15', NULL, NULL, 'unsent', '2025-09-15 17:20:05', '2025-09-15 17:20:05'),
+(49, 1, 1, NULL, '88885', 'group_ticket', 'Group-Ticket', 2, 0, 1, '54545', 0, 45000, 'oneway', NULL, NULL, '2025-09-16', '2025-09-16', 'AMQ', 'AMQ', NULL, NULL, '2025-09-16', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, '2025-09-16', NULL, NULL, 'bill_sent', '2025-09-16 08:58:07', '2025-09-16 15:55:17'),
+(51, 1, NULL, NULL, '542060', 'custom_bill', NULL, NULL, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-16', NULL, NULL, NULL, 'b2c', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, '2025-09-16', '[]', '[{\"service_name\":\"sdfs\",\"service_cost\":\"5000\"}]', 'bill_sent', '2025-09-16 09:00:34', '2025-09-16 15:55:17'),
+(52, 1, 1, NULL, '16018', 'group_ticket', 'Group-Ticket', 5, 0, 0, '454545', 0, 495000, 'oneway', NULL, NULL, '2025-09-16', '2025-09-16', 'AMI', 'ZYA', NULL, NULL, '2025-09-16', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, '2025-09-16', NULL, NULL, 'unsent', '2025-09-16 10:12:08', '2025-09-16 10:12:08');
 
 -- --------------------------------------------------------
 
@@ -10551,6 +10593,19 @@ CREATE TABLE `purchases` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `purchases`
+--
+
+INSERT INTO `purchases` (`id`, `product_id`, `purchase_vendor_id`, `purchase_account_id`, `purchase_price`, `purchase_date`, `purchase_note`, `purchase_tnxid`, `pax_data`, `created_at`, `updated_at`) VALUES
+(42, 42, 0, 12, 15000, '2025-09-15', NULL, NULL, NULL, '2025-09-15 15:16:22', '2025-09-15 17:22:54'),
+(43, 43, 0, 12, 6000, '2025-09-16', 'asdf', 'adfaewsafdasd', NULL, '2025-09-15 15:31:48', '2025-09-16 15:18:14'),
+(45, 45, 0, 12, 6000, '2025-09-15', NULL, 'asdasd', NULL, '2025-09-15 15:58:11', '2025-09-15 15:58:11'),
+(48, 48, 8, NULL, 1000, '2025-09-15', NULL, NULL, NULL, '2025-09-15 17:20:05', '2025-09-15 17:20:05'),
+(49, 49, 0, 12, 50000, '2025-09-16', 'sdfs', '45454545', NULL, '2025-09-16 05:59:48', '2025-09-16 08:58:07'),
+(51, 51, 0, 12, 5000, '2025-09-16', NULL, '6546', NULL, '2025-09-16 09:00:34', '2025-09-16 09:00:34'),
+(52, 52, 8, NULL, 500000, '2025-09-16', 'asdfsdfsdfsdfsd', NULL, NULL, '2025-09-16 09:58:26', '2025-09-16 10:12:08');
 
 -- --------------------------------------------------------
 
@@ -10612,6 +10667,18 @@ CREATE TABLE `sales` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `sales`
+--
+
+INSERT INTO `sales` (`id`, `product_id`, `sale_customer_id`, `sale_account_id`, `sale_date`, `sale_price`, `sale_due`, `sale_profit`, `sale_loss`, `sale_note`, `sale_tnxid`, `pax_data`, `pax_name`, `pax_mobile_no`, `pax_type`, `created_at`, `updated_at`) VALUES
+(79, 42, 14, NULL, '2025-09-15', 18000, 0, 3000, 0, '0', NULL, NULL, NULL, NULL, NULL, '2025-09-15 15:16:22', '2025-09-15 17:05:18'),
+(80, 43, 8, NULL, '2025-09-16', 7000, 0, 1000, 0, 'sadf', NULL, NULL, NULL, NULL, NULL, '2025-09-15 15:31:48', '2025-09-16 15:18:38'),
+(82, 45, 14, NULL, '2025-09-15', 7000, 0, 1000, 0, 'asdfasdfa', NULL, NULL, NULL, NULL, NULL, '2025-09-15 15:58:11', '2025-09-15 15:58:11'),
+(85, 48, 0, NULL, '2025-09-15', 3000, 0, 2000, 0, NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-15 17:20:05', '2025-09-15 17:20:05'),
+(93, 49, 8, NULL, '2025-09-16', 5000, 0, 0, 0, NULL, NULL, NULL, 'Developer', '45452452', 'Adult', '2025-09-16 08:58:07', '2025-09-16 08:58:07'),
+(95, 51, 8, NULL, '2025-09-16', 5000, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-16 09:00:34', '2025-09-16 09:00:34');
+
 -- --------------------------------------------------------
 
 --
@@ -10632,19 +10699,11 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('ECupSoJodtw91aHhUCNCUDueqjllub9jIf5XyvJy', NULL, '203.76.223.5', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiUHhOZER0cWp1ajhCT29oRnRPdm1VekJFUGhWamFCTXo5cEplbFhDQyI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo2MDoiaHR0cHM6Ly9iMmIucmFpZGFpdGJkLmNvbS9hZG1pbi9wZW9wbGUvY3VzdG9tZXIvZHVlX2N1c3RvbWVyIjt9czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjU6Imh0dHBzOi8vYjJiLnJhaWRhaXRiZC5jb20iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1758018780),
-('eMGywOokskt3WkTDrCXKj1AuMN6zoFAfvqaZkQr7', NULL, '103.127.3.23', 'WhatsApp/2.2535.3 W', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiaHpVVjhVWWxaQjhHcHVkR1JFM25SWTJ2ckNHV2ZPRXE3b0UzZGhYOSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjU6Imh0dHBzOi8vYjJiLnJhaWRhaXRiZC5jb20iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1758018255),
-('j17KJspJ8JUJoyuNsYZTwwSrXNU5Th6nXk4P5ay7', NULL, '103.130.118.5', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiZTdHMnJINmZoTW5Ud3BwdFNxMG5qU3dYV1ExanBpNG12NXhaVTczeiI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo1NDoiaHR0cHM6Ly9iMmIucmFpZGFpdGJkLmNvbS9hZG1pbi9leHBlbnNlL2NhdGVnb3J5L2luZGV4Ijt9czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjU6Imh0dHBzOi8vYjJiLnJhaWRhaXRiZC5jb20iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1758018808),
-('JB8UCZg8GLTMx0erW6zq0AAlGOJgbEchZjJU5DL4', NULL, '103.127.3.23', 'WhatsApp/2.2535.3 W', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiQ1pGZVpHTVZJaVY5RlFMblhySFUwR1JwUDAwdlU3bm9ZdjZYOERUaSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjU6Imh0dHBzOi8vYjJiLnJhaWRhaXRiZC5jb20iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1758017889),
-('lwKgYyReGpUBhEjpx04Ux0PJqpGssBVcqA5EhrS5', 1, '101.2.167.71', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiTWlKMURoRHRhV0VGbGhJbWtjRVJZcGFEZVVMMndzb2Zic1VqRGllMyI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTtzOjk6Il9wcmV2aW91cyI7YToxOntzOjM6InVybCI7czo0MToiaHR0cHM6Ly9iMmIucmFpZGFpdGJkLmNvbS9hZG1pbi9kYXNoYm9hcmQiO319', 1758018843),
-('lY67RjMFJwkKEN5HrDoBhRDovPYCZR1iMohYTs8q', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoib0oxNkYxMFdhUGZMVVo5dDRCMGtFb2hkRGVZYnNkQ1JBYXlWRmpZVyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mzc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9kYXNoYm9hcmQiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO30=', 1758017613),
-('MqE7oc2BS0AbZC3DObbTnqPfddSMUHPteVGlvwma', NULL, '103.127.3.23', 'WhatsApp/2.2535.3 W', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiNFdwWWt6Wlg0WlMwT3JUNXFyRHZMeFMyanNCUXhWWVBEamdDQ2ZqcCI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo0MToiaHR0cHM6Ly9iMmIucmFpZGFpdGJkLmNvbS9hZG1pbi9kYXNoYm9hcmQiO31zOjk6Il9wcmV2aW91cyI7YToxOntzOjM6InVybCI7czoyNToiaHR0cHM6Ly9iMmIucmFpZGFpdGJkLmNvbSI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1758017888),
-('OQvCT2yPlqJedSw0NziQxZLbiRrgnAzqVazb9cNO', 1, '101.2.167.71', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiVTM4TDdCc3RmZGtVZndFaGFaV0gxZDBJd2hQa3RKT1dYaHh0UEtvQyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NjA6Imh0dHBzOi8vYjJiLnJhaWRhaXRiZC5jb20vYWRtaW4vcGVvcGxlL2N1c3RvbWVyL2R1ZV9jdXN0b21lciI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7fQ==', 1758018508),
-('pijq6knkX6YIwA6g7OS2uQYaEqDDVRd8zikheQP7', NULL, '103.127.3.23', 'WhatsApp/2.2535.3 W', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoidktkUUgwWkVyT2JhcnlOM3d3bHFkZEtGQW9qUTlzMEdvVExaTUd3MiI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjU6Imh0dHBzOi8vYjJiLnJhaWRhaXRiZC5jb20iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1758017891),
-('rLKUd86UQUopENfziBAx1lplXtjMvmAofnDxYBJ5', 1, '101.2.167.71', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiUVNzZXJsYzB5RnJjY2V0b2ZHTTlhRUtOTFF0a2N4M0hEOTFZeGFzeCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDE6Imh0dHBzOi8vYjJiLnJhaWRhaXRiZC5jb20vYWRtaW4vZGFzaGJvYXJkIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9', 1758019071),
-('RlR95WQRYPFNj9jRb5jU3TppCUSa26QXj2nJv4MZ', NULL, '101.2.167.71', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiTFRUME51a2Y3MVFWWDZKUFhlblM4WnV2MGQ5UFFWeWdDZ01ZZjFCeSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjU6Imh0dHBzOi8vYjJiLnJhaWRhaXRiZC5jb20iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1758018895),
-('RpF0omRM3T0V2WUzeaPCwZEIpcIkLMI99I60mGqA', 1, '103.127.3.23', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 Edg/140.0.0.0', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiNnNUZE9PcnFtNWRoMFRXakFibk5tRGIxZk9VbHY4S3k0ZlhiWXJqYSI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJuZXciO2E6MDp7fXM6Mzoib2xkIjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDE6Imh0dHBzOi8vYjJiLnJhaWRhaXRiZC5jb20vYWRtaW4vZGFzaGJvYXJkIjt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9', 1758018268),
-('yOMhXsEZ5mgJVNjPsI2RRWFUW9XExC5z8vpq97Sb', 1, '103.127.3.23', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiams5S3VWc3A2Mm1LRFNWRjdUYUJiVFdoSG5zdWRQVkNmdEJ1bm1GRSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDE6Imh0dHBzOi8vYjJiLnJhaWRhaXRiZC5jb20vYWRtaW4vZGFzaGJvYXJkIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9', 1758019006);
+('5fub3h83b9uUrgN3j2PC2LBpBpNrTtYKWQ11tmUX', NULL, '103.127.3.23', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiYW1reEJEWXU0Z3N6aXVqRWxtMUltUWhxVGxaR29wYjRvRkVjNTYxVyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjU6Imh0dHBzOi8vYjJjLnJhaWRhaXRiZC5jb20iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1758038612),
+('9rcBpmiKUSt4pzJpf0hljC3a1uIj9YxborsVFYoI', 1, '114.130.186.192', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/28.0 Chrome/130.0.0.0 Mobile Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiMzRWZGZsNzZveW5Mc2V2MFNkT2RrY0Mzd3dlWm4wYVNtR1NQaFhwRCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NTY6Imh0dHBzOi8vYjJjLnJhaWRhaXRiZC5jb20vYWRtaW4vcGVvcGxlL2N1c3RvbWVyL2R1ZS9saXN0Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9', 1758039073),
+('eKHkog2aGvfgoSVqqqP7vji6BhqAWffhGh67Mzwz', 1, '103.133.206.59', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 Edg/140.0.0.0', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiNHpuT1dWeGFLMjVZUXZseWdKTEZka3ZGVUlocTFxeEhKdXVJTFREMCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Njg6Imh0dHBzOi8vYjJjLnJhaWRhaXRiZC5jb20vYWRtaW4vcGVvcGxlL2N1c3RvbWVyL2RldGFpbHMvMDE4ODgwMTIzNDU2Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9', 1758049457),
+('eVSLNbbBewzOXc5JpagsBDWk1E6KPCz2aqwvVX2a', NULL, '103.127.3.23', 'WhatsApp/2.2535.3 W', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiQVJ1aWZxOWlibmE2NXdUZTZVcEg4R1hNeEtGdldDUGZ3bkN4MWhrTyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjU6Imh0dHBzOi8vYjJjLnJhaWRhaXRiZC5jb20iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1758038621),
+('lY67RjMFJwkKEN5HrDoBhRDovPYCZR1iMohYTs8q', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoib0oxNkYxMFdhUGZMVVo5dDRCMGtFb2hkRGVZYnNkQ1JBYXlWRmpZVyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mzc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9kYXNoYm9hcmQiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO30=', 1758038220);
 
 -- --------------------------------------------------------
 
@@ -10704,6 +10763,13 @@ CREATE TABLE `ticket_refunds` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `ticket_refunds`
+--
+
+INSERT INTO `ticket_refunds` (`id`, `user_id`, `product_id`, `refund_pnr`, `refund_vendor_id`, `profit_account_id`, `refund_amount`, `customer_refund`, `refund_profit`, `refund_date`, `refund_expected_date`, `status`, `created_at`, `updated_at`) VALUES
+(9, 1, 43, '5000', 0, NULL, 3000, 1000, 2000, '2025-09-15', '2025-09-15', '1', '2025-09-15 17:19:57', '2025-09-15 17:20:05');
+
 -- --------------------------------------------------------
 
 --
@@ -10731,6 +10797,38 @@ CREATE TABLE `transactions` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `transactions`
+--
+
+INSERT INTO `transactions` (`id`, `user_id`, `product_id`, `expense_id`, `income_id`, `customer_id`, `from_account_id`, `to_account_id`, `amount`, `account_name`, `payment_type`, `transaction_type`, `transaction_number`, `transaction_id`, `transaction_date`, `note`, `status`, `created_at`, `updated_at`) VALUES
+(54, 1, NULL, NULL, NULL, 8, 12, NULL, 7000, 'BKash', 'client_payment', 'client_payment', '0231012341', 'jadfnjhcasf', '2025-09-15', 'kasjkdfajsdfasd', 'pending', '2025-09-15 15:32:59', '2025-09-15 15:32:59'),
+(55, 1, 45, NULL, 0, NULL, 12, NULL, 6000, NULL, NULL, 'hotel_booking-489458', 'C5EFKKELHS', NULL, '2025-09-15', 'Purchase payment for product', 'pending', '2025-09-15 15:58:11', '2025-09-15 15:58:11'),
+(60, 1, 48, NULL, 0, NULL, 12, NULL, 2000, NULL, NULL, 'Refund ticket -182705', '1ODG3XU3I9', NULL, '2025-09-15', 'Refund Ticket  payment for product', 'pending', '2025-09-15 17:20:05', '2025-09-15 17:20:05'),
+(64, 1, NULL, NULL, 0, NULL, 12, NULL, 500, NULL, NULL, 'ExpenseIncefta Company', 'G0D3MBYMMQ', NULL, '2025-09-15', 'Expense', 'pending', '2025-09-15 17:41:58', '2025-09-15 17:41:58'),
+(65, 1, NULL, NULL, 0, NULL, 12, NULL, 500, NULL, NULL, 'ExpenseSalary', '2F1B0H6MVM', NULL, '2025-09-16', 'Expense', 'pending', '2025-09-15 18:19:11', '2025-09-15 18:19:11'),
+(66, 1, NULL, NULL, 0, NULL, 12, NULL, 600, NULL, NULL, 'ExpenseEntertainmant', 'A6TA4SJJOH', NULL, '2025-09-16', 'Expense', 'pending', '2025-09-15 18:20:03', '2025-09-15 18:20:03'),
+(67, 1, NULL, NULL, 0, NULL, 12, NULL, 500, NULL, NULL, 'ExpenseTravelling Allowance', '6SRPSWOTIA', NULL, '2025-09-16', 'Expense', 'pending', '2025-09-15 18:20:10', '2025-09-15 18:20:10'),
+(68, 1, NULL, NULL, 0, NULL, 12, NULL, 7400, NULL, NULL, 'ExpensePrinting Stationary', '9OM1TCV3ST', NULL, '2025-09-16', 'Expense', 'pending', '2025-09-15 18:20:33', '2025-09-15 18:20:33'),
+(69, 1, NULL, NULL, 0, NULL, 12, NULL, 300, NULL, NULL, 'ExpenseOffice Rent', '3O7MORUQK2', NULL, '2025-09-16', 'Expense', 'pending', '2025-09-15 18:20:47', '2025-09-15 18:20:47'),
+(70, 1, NULL, NULL, 0, NULL, 12, NULL, 600, NULL, NULL, 'ExpenseElectricity Bill', 'UERQ1WMWIT', NULL, '2025-09-16', 'Expense', 'pending', '2025-09-15 18:20:55', '2025-09-15 18:20:55'),
+(71, 1, NULL, NULL, 0, NULL, 12, NULL, 40, NULL, NULL, 'ExpenseInternet Bill', '0VNMIONRVH', NULL, '2025-09-16', 'Expense', 'pending', '2025-09-15 18:21:03', '2025-09-15 18:21:03'),
+(72, 1, NULL, NULL, 0, NULL, 12, NULL, 500, NULL, NULL, 'ExpenseBank Installments', 'CEYDAL2Y7S', NULL, '2025-09-16', 'Expense', 'pending', '2025-09-15 18:21:17', '2025-09-15 18:21:17'),
+(73, 1, NULL, NULL, 0, NULL, 12, NULL, 20, NULL, NULL, 'ExpenseVAT Expense', 'HFEPBQVX0V', NULL, '2025-09-16', 'Expense', 'pending', '2025-09-15 18:21:25', '2025-09-15 18:21:25'),
+(74, 1, NULL, NULL, 0, NULL, 12, NULL, 5000, NULL, NULL, 'ExpenseDonations', 'Y8VQDZFFYC', NULL, '2025-09-16', 'Expense', 'pending', '2025-09-15 18:21:33', '2025-09-15 18:21:33'),
+(75, 1, NULL, NULL, 0, NULL, 12, NULL, 540, NULL, NULL, 'ExpensePostage & Courier', 'DZN7U37JDX', NULL, '2025-09-16', 'Expense', 'pending', '2025-09-15 18:21:42', '2025-09-15 18:21:42'),
+(76, 1, NULL, NULL, 0, NULL, 12, NULL, 1000, NULL, NULL, 'ExpenseMiscellaneous Expense', 'ZYOFUSMB30', NULL, '2025-09-16', 'Expense', 'pending', '2025-09-15 18:21:48', '2025-09-15 18:21:48'),
+(77, 1, NULL, NULL, 0, NULL, 12, NULL, 200, NULL, NULL, 'ExpenseCar (Personal)', 'KUDCLBIU0M', NULL, '2025-09-16', 'Expense', 'pending', '2025-09-15 18:21:55', '2025-09-15 18:21:55'),
+(78, 1, NULL, NULL, 0, NULL, 12, NULL, 3000, NULL, NULL, 'ExpenseCharity', 'PZRTSGG9YC', NULL, '2025-09-16', 'Expense', 'pending', '2025-09-15 18:22:01', '2025-09-15 18:22:01'),
+(79, 1, NULL, NULL, 0, NULL, 12, NULL, 2000, NULL, NULL, 'ExpensePersonal Expense', 'TCJFYD6XQB', NULL, '2025-09-16', 'Expense', 'pending', '2025-09-15 18:22:08', '2025-09-15 18:22:08'),
+(81, 1, NULL, NULL, NULL, NULL, 12, NULL, 200, NULL, NULL, 'Extra Income-Interest On FDR', 'HW3OTNTMTM', NULL, '2025-09-16', 'Extra Income-Interest On FDR', 'pending', '2025-09-15 20:09:47', '2025-09-15 20:09:47'),
+(82, 1, NULL, NULL, NULL, NULL, 12, NULL, 200, NULL, NULL, 'Extra Income-Interest On FDR', 'JO8UXDMMXL', NULL, '2025-09-16', 'Extra Income-Interest On FDR', 'pending', '2025-09-15 20:14:55', '2025-09-15 20:14:55'),
+(83, 1, NULL, NULL, NULL, NULL, 12, NULL, 200000, NULL, NULL, 'Extra Income-Interest On FDR', '7XLUDB6EBG', NULL, '2025-09-16', 'Extra Income-Interest On FDR', 'pending', '2025-09-15 20:21:06', '2025-09-15 20:21:06'),
+(92, 1, 49, NULL, NULL, NULL, 12, NULL, 50000, NULL, NULL, 'Group-ticket-88885', 'KZSHZNYTVX', NULL, '2025-09-16', 'Group Ticket Purchase', 'pending', '2025-09-16 08:58:07', '2025-09-16 08:58:07'),
+(93, 1, 42, NULL, NULL, NULL, 12, NULL, 15000, NULL, NULL, 'Bill -608259', 'HYKJSNNWWM', NULL, '2025-09-15', 'Custom Bill payment for product', 'pending', '2025-09-16 08:58:44', '2025-09-16 08:58:44'),
+(95, 1, 51, NULL, NULL, NULL, 12, NULL, 5000, NULL, NULL, 'custom_bill-542060', 'TSKSIPYPUW', NULL, '2025-09-16', 'Purchase payment for product', 'pending', '2025-09-16 09:00:34', '2025-09-16 09:00:34'),
+(97, 1, 43, NULL, NULL, NULL, 12, NULL, 6000, NULL, NULL, 'Ticket -156550', 'VMJF1Q8RJN', NULL, '2025-09-16', 'Purchase payment for product', 'pending', '2025-09-16 15:18:38', '2025-09-16 15:18:38');
 
 -- --------------------------------------------------------
 
@@ -10761,7 +10859,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `uuid`, `slug`, `phone`, `designation`, `address`, `type`, `status`, `last_seen`, `avatar`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'Developer Robiul', '', 'fdsdf', '01882850027', NULL, NULL, NULL, '1', '2025-09-16 16:37:51', NULL, '$2y$12$.8gh4aldzpDdbLLcmoaUcOTkAuUubdGpBiW/uVmuuOgKDh4KdCeS6', NULL, '2025-09-09 11:15:22', '2025-09-16 16:37:51'),
+(1, 'Developer Robiul', '', 'fdsdf', '01882850027', NULL, NULL, NULL, '1', '2025-09-17 01:04:17', NULL, '$2y$12$.8gh4aldzpDdbLLcmoaUcOTkAuUubdGpBiW/uVmuuOgKDh4KdCeS6', NULL, '2025-09-09 11:15:22', '2025-09-17 01:04:17'),
 (2, 'Staff', '', 'dfsgsdf', '01745034139', NULL, 'Fatehabad College Road,Chattogram', NULL, '1', NULL, 'frontend/upload/files/1842812043674574.png', '$2y$12$LsNClUdrvrbCEkffqCnITurVgBHKWeBMVxTzmynQ/VaigqB79Makq', NULL, '2025-09-09 12:28:36', '2025-09-11 10:23:06'),
 (8, 'Gotrip Travel', '2965', '01610361144', '01610361144', NULL, 'Fatehabad College Road,Chattogram', 'customer', '1', NULL, NULL, '$2y$12$Dqt5F9O3wWutpE5Tha6h2uXyNnX/z8OmCQbDnww3k5biojYm2EIbq', NULL, '2025-09-11 04:26:48', '2025-09-14 04:48:18'),
 (9, 'Jumaira Travels', '3425', '018880123456', '018880123456', NULL, 'Fatehabad College Road,Chattogram', 'customer', '1', NULL, NULL, '$2y$12$OMba/zW247Hz/VeeYiWUauVSsheHErTdAah.W6unq3WR7Snk2KEga', NULL, '2025-09-11 04:27:16', '2025-09-14 04:43:10'),
@@ -11126,7 +11224,7 @@ ALTER TABLE `migrations`
 -- AUTO_INCREMENT for table `office_notes`
 --
 ALTER TABLE `office_notes`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `permissions`
@@ -11174,7 +11272,7 @@ ALTER TABLE `ticket_refunds`
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=96;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=98;
 
 --
 -- AUTO_INCREMENT for table `users`

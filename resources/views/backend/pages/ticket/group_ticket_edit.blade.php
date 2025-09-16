@@ -45,7 +45,36 @@
                                                 </div>
                                                 <span class="text-danger error-message" id="error-ticket_pnr"></span>
                                             </div>
+                                            <div class="col-md-2 mb-2">
+                                                <label class="mb-0" for="purchase_vendor_id">Purchase Vendor</label>
+                                                <div class="input-group">
+                                                    <select name="purchase_vendor_id" id="purchase_vendor_id"
+                                                        class="single-select form-control form-control-sm select2 purchase_vendor_id">
+                                                        <option value="0">My self</option>
+                                                        @foreach ($customers as $item)
+                                                            <option value="{{ $item->id }}"
+                                                                {{ $g_ticket->purchase->purchase_vendor_id == $item->id ? 'selected' : '' }}>
+                                                                {{ $item->name }}
+                                                                || {{ $item->phone }}
+                                                            </option>
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2 mb-3">
+                                                <label class="mb-0" for="group_single_price">Single Price<span
+                                                        class="text-danger">*</span></label>
+                                                <div class="input-group">
 
+                                                    <input name="group_single_price" id="group_single_price" type="number"
+                                                        class="form-control form-control-sm"
+                                                        value="{{ $g_ticket->group_single_price }}"
+                                                        placeholder="Single Price" />
+                                                </div>
+                                                <span class="text-danger error-message"
+                                                    id="error-group_single_price"></span>
+                                            </div>
                                             <div class="col-md-2 mb-3">
                                                 <label class="mb-0" for="group_qty">Qty<span
                                                         class="text-danger">*</span></label>
@@ -65,29 +94,13 @@
                                                             class="fa fa-minus"></i></button>
                                                     <input type="number" name="group_ticket_qty" id="group_ticket_qty"
                                                         class="form-control form-control-sm text-center"
-                                                        value="{{ $g_ticket->group_ticket_qty }}" />
+                                                        value="{{ $g_ticket->group_ticket_qty }}" readonly />
                                                     <button type="button"
                                                         class="btn btn-sm btn-outline-secondary plus-btn"><i
                                                             class="fa fa-plus"></i></button>
                                                 </div>
                                             </div>
-                                            <div class="col-md-2 mb-2">
-                                                <label class="mb-0" for="purchase_vendor_id">Purchase Vendor</label>
-                                                <div class="input-group">
-                                                    <select name="purchase_vendor_id" id="purchase_vendor_id"
-                                                        class="single-select form-control form-control-sm select2 purchase_vendor_id">
-                                                        <option value="0">My self</option>
-                                                        @foreach ($customers as $item)
-                                                            <option value="{{ $item->id }}"
-                                                                {{ $g_ticket->purchase->purchase_vendor_id == $item->id ? 'selected' : '' }}>
-                                                                {{ $item->name }}
-                                                                || {{ $item->phone }}
-                                                            </option>
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                            </div>
+
                                             <div class="col-md-2 mb-3">
                                                 <label class="mb-0" for="purchase_price">Purchase<span
                                                         class="text-danger">*</span></label>
@@ -95,7 +108,7 @@
 
                                                     <input name="purchase_price" id="purchase_price" type="number"
                                                         class="form-control form-control-sm"
-                                                        value="{{ $g_ticket->purchase->purchase_price }}"
+                                                        value="{{ $g_ticket->purchase->purchase_price }}" readonly
                                                         placeholder="Price" />
                                                 </div>
                                                 <span class="text-danger error-message" id="error-purchase_price"></span>
@@ -384,17 +397,15 @@
 
 
 @push('scripts')
-    <script>
-        $(document).ready(function() {
-            var wrapper = $('.group_ticket_column_field_wrapper');
+   <script>
+    $(document).ready(function() {
+        var wrapper = $('.group_ticket_column_field_wrapper');
 
-            function getMaxField() {
-                return parseInt($('#group_qty').val()) || 1;
-            }
-
-            // Template for one pax row
-            function getFieldHTML() {
-                return `
+        function getMaxField() {
+            return parseInt($('#group_qty').val()) || 1;
+        }
+        function getFieldHTML() {
+            return `
             <div class="group_ticket_column_add_parent">
                 <div class="row">
                     <div class="col-md-3 mb-3">
@@ -434,169 +445,148 @@
                     </div>
                 </div>
             </div>`;
+        }
+
+        // Update wrapper with required qty
+        function updateTicketFields(ticketQty) {
+            var maxField = getMaxField();
+            if (ticketQty > maxField) ticketQty = maxField;
+
+            while (wrapper.find('.group_ticket_column_add_parent').length < ticketQty) {
+                wrapper.append(getFieldHTML());
+                wrapper.find('.select2').last().select2();
             }
 
-            // Update wrapper with required qty
-            function updateTicketFields(ticketQty) {
-                var maxField = getMaxField();
-                if (ticketQty > maxField) ticketQty = maxField;
+            $('#group_ticket_qty').val(ticketQty);
+            recalcTotals(); 
+        }
 
-                while (wrapper.find('.group_ticket_column_add_parent').length < ticketQty) {
-                    wrapper.append(getFieldHTML());
-                    wrapper.find('.select2').last().select2();
-                }
+        // Recalculate purchase_price, profit, loss etc.
+        function recalcTotals() {
+            const qty = parseFloat($('#group_qty').val()) || 0;
+            const singlePrice = parseFloat($('#group_single_price').val()) || 0;
 
-                $('#group_ticket_qty').val(ticketQty);
-            }
+            const purchasePrice = qty * singlePrice;
+            $('#purchase_price').val(purchasePrice.toFixed(2));
 
-            // Load existing rows from DB (edit mode)
-            @foreach ($g_ticket->group_ticket_sales as $index => $item)
-                updateTicketFields({{ $loop->index + 1 }});
-                $('input[name="group_pax_name[]"]').eq({{ $index }}).val("{{ $item->pax_name }}");
-                $('input[name="group_pax_mobile_no[]"]').eq({{ $index }}).val(
-                "{{ $item->pax_mobile_no }}");
-                $('select[name="group_pax_type[]"]').eq({{ $index }}).val("{{ $item->pax_type }}").trigger(
-                    'change');
-                $('input[name="sale_price[]"]').eq({{ $index }}).val("{{ $item->sale_price }}");
-                $('select[name="sale_customer_id[]"]').eq({{ $index }}).val(
-                    "{{ $item->sale_customer_id }}").trigger('change');
-            @endforeach
-
-            // Plus button
-            $('.plus-btn').click(function() {
-                var currentQty = parseInt($('#group_ticket_qty').val()) || 0;
-                var maxField = getMaxField();
-                if (currentQty < maxField) {
-                    updateTicketFields(currentQty + 1);
-                } else {
-                    alert('Quantity cannot exceed total group quantity!');
-                }
-            });
-
-            // Minus button
-            $('.minus-btn').click(function() {
-                var currentQty = parseInt($('#group_ticket_qty').val()) || 0;
-                if (currentQty > 0) {
-                    wrapper.find('.group_ticket_column_add_parent').last().remove();
-                    $('#group_ticket_qty').val(currentQty - 1);
-                }
-            });
-
-            // Remove button (row delete)
-            $(wrapper).on('click', '.remove_button', function(e) {
-                e.preventDefault();
-                $(this).closest('.group_ticket_column_add_parent').remove();
-                var totalFields = wrapper.find('.group_ticket_column_add_parent').length;
-                $('#group_ticket_qty').val(totalFields);
-            });
-
-            // When group_qty changes manually
-            $('#group_qty').on('input', function() {
-                var maxField = getMaxField();
-                var currentQty = parseInt($('#group_ticket_qty').val()) || 0;
-                if (currentQty > maxField) {
-                    while (wrapper.find('.group_ticket_column_add_parent').length > maxField) {
-                        wrapper.find('.group_ticket_column_add_parent').last().remove();
-                    }
-                    $('#group_ticket_qty').val(maxField);
-                }
-            });
-        });
-    </script>
-
-
-
-
-
-
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-
-            const travelStatusRadios = document.querySelectorAll(
-                'input[name="travel_status"]'); // Corrected name attribute
-            const returnDateContainer = document.getElementById('group_return_date_container');
-            const multicityAirportContainer = document.getElementById('group_multicity_airport_container');
-
-            // Add event listeners to each radio button
-            travelStatusRadios.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    if (this.value === 'roundtrip') {
-                        returnDateContainer.style.display = 'block'; // Show return date field
-                        multicityAirportContainer.style.display = 'none'; // Hide multicity fields
-                    } else if (this.value === 'multicity') {
-                        multicityAirportContainer.style.display = 'block'; // Show multicity fields
-                        returnDateContainer.style.display = 'block'; // Show return date field
-                    } else { // Oneway
-                        returnDateContainer.style.display = 'none'; // Hide return date field
-                        multicityAirportContainer.style.display = 'none'; // Hide multicity fields
-                    }
-                });
-            });
-
-            // Trigger the initial state based on selected radio
-            const selectedRadio = document.querySelector(
-                'input[name="travel_status"]:checked'); // Corrected name attribute
-            if (selectedRadio) {
-                selectedRadio.dispatchEvent(new Event('change'));
-            }
-        });
-    </script>
-    <script>
-        document.addEventListener('input', function() {
-            const purchasePrice = parseFloat(document.getElementById('purchase_price').value) ||
-                0; // Purchase Price
             let totalSales = 0;
-            let totalDue = 0;
-
-            // Calculate Total Sales: Sum of all Prices for all rows
-            document.querySelectorAll('[name="sale_price[]"]').forEach((priceInput, index) => {
-                const price = parseFloat(priceInput.value) || 0;
-
-                // Add price to Total Sales
+            $('[name="sale_price[]"]').each(function() {
+                const price = parseFloat($(this).val()) || 0;
                 totalSales += price;
-
-                // Calculate Due for this row (price - pay)
-                const due = price; // Assuming the due is just the sale price without payment
-                totalDue += due; // Sum up the dues
             });
-
-            // Profit or Loss Calculation
-            const profitField = document.getElementById('sale_profit');
-            const lossField = document.getElementById('sale_loss');
 
             if (totalSales > purchasePrice) {
-                profitField.value = (totalSales - purchasePrice).toFixed(2); // Show Profit
-                lossField.value = 0; // No Loss
+                $('#sale_profit').val((totalSales - purchasePrice).toFixed(2));
+                $('#sale_loss').val(0);
             } else {
-                lossField.value = (purchasePrice - totalSales).toFixed(2); // Show Loss
-                profitField.value = 0;
+                $('#sale_loss').val((purchasePrice - totalSales).toFixed(2));
+                $('#sale_profit').val(0);
             }
 
+            if ($('#total_payment').length) {
+                $('#total_payment').val(totalSales.toFixed(2));
+            }
+            if ($('#total_due').length) {
+                $('#total_due').val(totalSales.toFixed(2));
+            }
+        }
 
-            document.getElementById('total_payment').value = totalSales.toFixed(
-                2);
-            document.getElementById('total_due').value = totalDue.toFixed(2);
+        // Load existing rows (edit mode)
+        @foreach ($g_ticket->group_ticket_sales as $index => $item)
+            updateTicketFields({{ $loop->index + 1 }});
+            $('input[name="group_pax_name[]"]').eq({{ $index }}).val("{{ $item->pax_name }}");
+            $('input[name="group_pax_mobile_no[]"]').eq({{ $index }}).val("{{ $item->pax_mobile_no }}");
+            $('select[name="group_pax_type[]"]').eq({{ $index }}).val("{{ $item->pax_type }}").trigger('change');
+            $('input[name="sale_price[]"]').eq({{ $index }}).val("{{ $item->sale_price }}");
+            $('select[name="sale_customer_id[]"]').eq({{ $index }}).val("{{ $item->sale_customer_id }}").trigger('change');
+        @endforeach
+
+        // Plus button
+        $('.plus-btn').click(function() {
+            var currentQty = parseInt($('#group_ticket_qty').val()) || 0;
+            var maxField = getMaxField();
+            if (currentQty < maxField) {
+                updateTicketFields(currentQty + 1);
+            } else {
+                alert('Quantity cannot exceed total group quantity!');
+            }
         });
-    </script>
-    <script>
-        $(document).ready(function() {
-            const vendorSelect = $('#purchase_vendor_id');
-            const paymentMethodSection = $('.purchase_payment_method'); // Payment Method + Transaction No
 
-            function togglePaymentMethod() {
-                if (vendorSelect.val() === '0') { // My self selected
-                    paymentMethodSection.show();
+        // Minus button
+        $('.minus-btn').click(function() {
+            var currentQty = parseInt($('#group_ticket_qty').val()) || 0;
+            if (currentQty > 0) {
+                wrapper.find('.group_ticket_column_add_parent').last().remove();
+                $('#group_ticket_qty').val(currentQty - 1);
+                recalcTotals();
+            }
+        });
+
+        // Remove button
+        $(wrapper).on('click', '.remove_button', function(e) {
+            e.preventDefault();
+            $(this).closest('.group_ticket_column_add_parent').remove();
+            var totalFields = wrapper.find('.group_ticket_column_add_parent').length;
+            $('#group_ticket_qty').val(totalFields);
+            recalcTotals();
+        });
+
+        // Qty / Single Price change
+        $('#group_qty, #group_single_price').on('input', function() {
+            recalcTotals();
+        });
+
+        // Sale price change
+        $(document).on('input', '[name="sale_price[]"]', function() {
+            recalcTotals();
+        });
+
+        recalcTotals();
+    });
+
+    // Travel status toggle
+    document.addEventListener('DOMContentLoaded', function() {
+        const travelStatusRadios = document.querySelectorAll('input[name="travel_status"]');
+        const returnDateContainer = document.getElementById('group_return_date_container');
+        const multicityAirportContainer = document.getElementById('group_multicity_airport_container');
+
+        travelStatusRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'roundtrip') {
+                    returnDateContainer.style.display = 'block';
+                    multicityAirportContainer.style.display = 'none';
+                } else if (this.value === 'multicity') {
+                    multicityAirportContainer.style.display = 'block';
+                    returnDateContainer.style.display = 'block';
                 } else {
-                    paymentMethodSection.hide();
+                    returnDateContainer.style.display = 'none';
+                    multicityAirportContainer.style.display = 'none';
                 }
-            }
-
-            // On page load
-            togglePaymentMethod();
-
-            // On change
-            vendorSelect.on('change', togglePaymentMethod);
+            });
         });
-    </script>
+
+        const selectedRadio = document.querySelector('input[name="travel_status"]:checked');
+        if (selectedRadio) {
+            selectedRadio.dispatchEvent(new Event('change'));
+        }
+    });
+
+    // Vendor select toggle
+    $(document).ready(function() {
+        const vendorSelect = $('#purchase_vendor_id');
+        const paymentMethodSection = $('.purchase_payment_method');
+
+        function togglePaymentMethod() {
+            if (vendorSelect.val() === '0') { 
+                paymentMethodSection.show();
+            } else {
+                paymentMethodSection.hide();
+            }
+        }
+
+        togglePaymentMethod();
+        vendorSelect.on('change', togglePaymentMethod);
+    });
+</script>
+
 @endpush

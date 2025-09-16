@@ -26,6 +26,7 @@ class GroupTicketStore extends FormRequest
             'group_qty' => 'required|numeric',
             'purchase_price' => 'required',
             'depart_date' => 'required',
+            'group_single_price' => 'required',
             'ticket_pnr' => 'required|unique:products,ticket_pnr',
         ];
     }

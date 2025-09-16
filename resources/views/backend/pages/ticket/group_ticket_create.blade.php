@@ -46,30 +46,6 @@
                                                 </div>
                                                 <span class="text-danger error-message" id="error-ticket_pnr"></span>
                                             </div>
-                                            <div class="col-md-2 mb-3">
-                                                <label class="mb-0" for="group_qty">Qty<span
-                                                        class="text-danger">*</span></label>
-                                                <div class="input-group">
-                                                    <input type="number" name="group_qty" id="group_qty"
-                                                        class="form-control form-control-sm" placeholder="Qty" />
-                                                </div>
-                                                <span class="text-danger error-message" id="error-group_qty"></span>
-                                            </div>
-                                            <div class="col-md-2 mb-3">
-                                                <label class="mb-0" for="group_ticket_qty">Insert Now<span
-                                                        class="text-danger">*</span></label>
-                                                <div class="input-group">
-                                                    <button type="button"
-                                                        class="btn btn-sm btn-outline-secondary minus-btn"><i
-                                                            class="fa fa-minus"></i></button>
-                                                    <input type="number" name="group_ticket_qty" id="group_ticket_qty"
-                                                        class="form-control form-control-sm text-center" value=""
-                                                        min="" />
-                                                    <button type="button"
-                                                        class="btn btn-sm btn-outline-secondary plus-btn"><i
-                                                            class="fa fa-plus"></i></button>
-                                                </div>
-                                            </div>
 
                                             <div class="col-md-2 mb-2">
                                                 <label class="mb-0" for="purchase_vendor_id">Purchase Vendor</label>
@@ -85,6 +61,46 @@
                                                     </select>
                                                 </div>
                                             </div>
+                                            <div class="col-md-2 mb-3">
+                                                <label class="mb-0" for="group_single_price">Single Price<span
+                                                        class="text-danger">*</span></label>
+                                                <div class="input-group">
+
+                                                    <input name="group_single_price" id="group_single_price" type="number"
+                                                        class="form-control form-control-sm" value=""
+                                                        placeholder="Single Price" />
+                                                </div>
+                                                <span class="text-danger error-message"
+                                                    id="error-group_single_price"></span>
+                                            </div>
+                                            <div class="col-md-2 mb-3">
+                                                <label class="mb-0" for="group_qty">Qty<span
+                                                        class="text-danger">*</span></label>
+                                                <div class="input-group">
+                                                    <input type="number" name="group_qty" id="group_qty"
+                                                        class="form-control form-control-sm" placeholder="Qty" />
+                                                </div>
+                                                <span class="text-danger error-message" id="error-group_qty"></span>
+                                            </div>
+
+                                            <div class="col-md-2 mb-3">
+                                                <label class="mb-0" for="group_ticket_qty">Insert Now<span
+                                                        class="text-danger">*</span></label>
+                                                <div class="input-group">
+                                                    <button type="button"
+                                                        class="btn btn-sm btn-outline-secondary minus-btn"><i
+                                                            class="fa fa-minus"></i></button>
+                                                    <input type="number" name="group_ticket_qty" id="group_ticket_qty"
+                                                        class="form-control form-control-sm text-center" readonly
+                                                        value="" min="" />
+                                                    <button type="button"
+                                                        class="btn btn-sm btn-outline-secondary plus-btn"><i
+                                                            class="fa fa-plus"></i></button>
+                                                </div>
+                                            </div>
+
+
+
                                             <div class="col-md-2 mb-3">
                                                 <label class="mb-0" for="purchase_price">Purchase<span
                                                         class="text-danger">*</span></label>
@@ -385,36 +401,34 @@
             }
 
             var fieldHTML = `
-    <div class="group_ticket_column_add_parent">
-        <div class="row">
-            <div class="col-md-3 mb-3">
-                <input name="group_pax_name[]" class="form-control form-control-sm" value="T B A" placeholder="Pax Name">
+        <div class="group_ticket_column_add_parent">
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <input name="group_pax_name[]" class="form-control form-control-sm" value="T B A" placeholder="Pax Name">
+                </div>
+                <div class="col-md-2 mb-3">
+                    <input type="number" name="group_pax_mobile_no[]" required class="form-control form-control-sm" placeholder="Phone">
+                </div>
+                <div class="col-md-2 mb-3">
+                    <select name="group_pax_type[]" class="form-control form-control-sm select2" style="width:100%">
+                        <option value="Adult">Adult</option>
+                        <option value="Child">Child</option>
+                        <option value="Infant">Infant</option>
+                    </select>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <input type="number" name="sale_price[]" required class="form-control form-control-sm sale_price" placeholder="Price">
+                </div>
+                <div class="col-md-3 mb-2">
+                    <select name="sale_customer_id[]" class="clients-select form-control select2" style="width:100%">
+                        <option value="">Select Client</option>
+                        @foreach ($customers as $item)
+                            <option value="{{ $item->id }}">{{ $item->name }} || {{ $item->phone }} || {{ $item->passport_no }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
-            <div class="col-md-2 mb-3">
-                <input type="number" name="group_pax_mobile_no[]" required class="form-control form-control-sm" placeholder="Phone">
-            </div>
-            <div class="col-md-2 mb-3">
-                <select name="group_pax_type[]" class="form-control form-control-sm select2" style="width:100%">
-                    <option value="Adult">Adult</option>
-                    <option value="Child">Child</option>
-                    <option value="Infant">Infant</option>
-                </select>
-            </div>
-            <div class="col-md-2 mb-3">
-                <input type="number" name="sale_price[]" required class="form-control form-control-sm sale_price" placeholder="Price">
-            </div>
-            <div class="col-md-3 mb-2">
-                <select name="sale_customer_id[]" class="clients-select form-control select2" style="width:100%">
-                    <option value="">Select Client</option>
-                    @foreach ($customers as $item)
-                        <option value="{{ $item->id }}">{{ $item->name }} || {{ $item->phone }} || {{ $item->passport_no }}</option>
-                    @endforeach
-                </select>
-            </div>
-        
-        </div>
-    </div>`;
-
+        </div>`;
 
             function updateTicketFields(ticketQty) {
                 var maxField = getMaxField();
@@ -456,10 +470,21 @@
                 var qty = parseInt($(this).val()) || 0;
                 if (qty < 0) qty = 0;
                 updateTicketFields(qty);
+                updatePurchasePrice(); // qty change হলে purchase price update
             });
 
-            // Initialize empty (no fields at first)
-            updateTicketFields(0);
+            // =========================
+            // Purchase Price = single_price * qty
+            // =========================
+            function updatePurchasePrice() {
+                let singlePrice = parseFloat($('#group_single_price').val()) || 0;
+                let qty = parseInt($('#group_qty').val()) || 0;
+                let total = singlePrice * qty;
+                $('#purchase_price').val(total);
+                calculateProfitLoss();
+            }
+
+            $('#group_single_price').on('input', updatePurchasePrice);
 
             // =========================
             // Profit / Loss Calculation
@@ -479,10 +504,10 @@
             $('#purchase_price').on('input', calculateProfitLoss);
             $(document).on('input', '.sale_price', calculateProfitLoss);
 
-            // Initialize profit/loss on page load
+            // Initialize empty (no fields at first)
+            updateTicketFields(0);
+            updatePurchasePrice();
             calculateProfitLoss();
-
-
         });
 
         $(document).ready(function() {

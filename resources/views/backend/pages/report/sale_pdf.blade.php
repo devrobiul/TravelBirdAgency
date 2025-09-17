@@ -132,8 +132,8 @@
                                 @foreach (json_decode($item->product->pax_data) as $data)
                                     P/N: {{ $data->name ?? 'N/A' }} <br>
                                     P/M: {{ $data->mobile_no ?? 'N/A' }}<br>
-                                    P/T:{{ $data['type'] ?? 'N/A' }} <br>
-                                    P/P:{{ $data['price'] ?? 'N/A' }}/-
+                                    P/T:{{ $data->type ?? 'N/A' }} <br>
+                                    P/P:{{ $data->price ?? 'N/A' }}/-
                                 @endforeach
                             @endif
 

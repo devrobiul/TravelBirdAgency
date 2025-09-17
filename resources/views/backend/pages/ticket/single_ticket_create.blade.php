@@ -302,6 +302,8 @@
                                                                     @endforeach
                                                                 </select>
                                                             </div>
+                                                              <span class="text-danger error-message"
+                                                                id="error-purchase_account_id"></span>
                                                         </div>
                                                         <div class="col-md-6">
                                                             <label class="mb-0" for="purchase_method_id">Purchase

@@ -128,8 +128,8 @@
                             <strong>Ticket</strong>:<span
                                 style="color:blue">{{ $item->product->ticket_pnr }}</span>({{ $item->product->ticket_type ?? 'N/A' }})<br>
                             <strong>Sale:</strong>{{ $item->product->sale_date ?? 'N/A' }}<br>
-                            @if ($item->product && $item->product->meta_data)
-                                @foreach (json_decode($item->product->meta_data) as $data)
+                            @if ($item->product && $item->product->pax_data)
+                                @foreach (json_decode($item->product->pax_data) as $data)
                                     P/N: {{ $data->name ?? 'N/A' }} <br>
                                     P/M: {{ $data->mobile_no ?? 'N/A' }}<br>
                                     P/T:{{ $data['type'] ?? 'N/A' }} <br>

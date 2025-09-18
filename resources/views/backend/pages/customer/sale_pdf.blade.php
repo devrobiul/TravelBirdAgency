@@ -130,7 +130,7 @@
         <table>
             <tr>
                 <td style="text-align:left"><strong>Previous Balance</strong></td>
-                <td style="text-align:right"><strong>{{ formatIndianCurrency($previous_balance) }}/=</strong></td>
+                <td style="text-align:right"><strong>{{ currencyBD($previous_balance) }}/=</strong></td>
             </tr>
         </table>
     @endif
